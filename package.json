@@ -18,5 +18,17 @@
   "packageManager": "pnpm@10.4.1",
   "engines": {
     "node": ">=20"
+  },
+  "dependencies": {
+    "react": "19.2.3",
+    "react-dom": "19.2.3"
+  },
+  "pnpm": {
+    "ignoredBuiltDependencies": [
+      "@clerk/shared"
+    ],
+    "onlyBuiltDependencies": [
+      "@clerk/shared"
+    ]
   }
 }
