@@ -1,10 +1,5 @@
-import { SignIn } from "@clerk/nextjs"
+import { SignIn } from "@clerk/nextjs";
 
-
-export const SignInVIew = () => {
-  return (
-    <SignIn routing="hash"/>
-  )
-}
-
- 
+export const SignInView = () => {
+  return <SignIn routing="hash" />;
+};
