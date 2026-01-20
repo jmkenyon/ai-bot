@@ -1,3 +1,5 @@
+"use client"
+
 import { WidgetHeader } from "../components/widget-header";
 import {
   Form,
@@ -14,7 +16,6 @@ import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useMutation } from "convex/react";
 import { api } from "@workspace/backend/_generated/api";
-import { userAgent } from "next/server";
 import { Doc } from "@workspace/backend/_generated/dataModel";
 
 const formSchema = z.object({
