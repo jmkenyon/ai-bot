@@ -34,7 +34,7 @@ const customerSupportItems = [
     icon: InboxIcon,
   },
   {
-    title: "Knowlege Base",
+    title: "Knowledge Base",
     url: "/files",
     icon: LibraryBigIcon,
   },
@@ -56,7 +56,7 @@ const configurationItems = [
 const accountItems = [
   {
     title: "Plan & Billing",
-    url: "/billin",
+    url: "/billing",
     icon: CreditCardIcon,
   },
 ];
@@ -113,6 +113,10 @@ export const DashboardSidebar = () => {
                 <SidebarMenuItem key={item.url}>
                   <SidebarMenuButton
                     asChild
+                    className={cn(
+                      isActive(item.url) &&
+                        "bg-gradient-to-b from-sidebar-primary to-blue-600! text-sidebar-primary-foreground! hover:to-blue-600/90! "
+                    )}
                     tooltip={item.title}
                     isActive={isActive(item.url)}
                   >
@@ -135,6 +139,10 @@ export const DashboardSidebar = () => {
               {configurationItems.map((item) => (
                 <SidebarMenuItem key={item.url}>
                   <SidebarMenuButton
+                    className={cn(
+                      isActive(item.url) &&
+                        "bg-gradient-to-b from-sidebar-primary to-blue-600! text-sidebar-primary-foreground! hover:to-blue-600/90! "
+                    )}
                     asChild
                     tooltip={item.title}
                     isActive={isActive(item.url)}
@@ -159,6 +167,10 @@ export const DashboardSidebar = () => {
                 <SidebarMenuItem key={item.url}>
                   <SidebarMenuButton
                     asChild
+                    className={cn(
+                      isActive(item.url) &&
+                        "bg-gradient-to-b from-sidebar-primary to-blue-600! text-sidebar-primary-foreground! hover:to-blue-600/90! "
+                    )}
                     tooltip={item.title}
                     isActive={isActive(item.url)}
                   >
@@ -182,11 +194,13 @@ export const DashboardSidebar = () => {
               appearance={{
                 elements: {
                   rootBox: "w-full! h-8!",
-                  userButtonTrigger: "w-full! p-2! hover:bg-sidebar-accent! hover:text-sidebar-accent-foreground! group-data-[collapsed=icon]:size-8! group-data-[collapsed=icon]:p-2! ",
-                  userButtonBox: "w-full! flex-row-reverse! justify-end! gap-2! group-data-[collapsible=icon]:justify-center! text-sidebar-foreground!",
-                  userButtonOuterIdentifier: "group-data-[collapsible=icon]:hidden! pl-0!",
+                  userButtonTrigger:
+                    "w-full! p-2! hover:bg-sidebar-accent! hover:text-sidebar-accent-foreground! group-data-[collapsed=icon]:size-8! group-data-[collapsed=icon]:p-2! ",
+                  userButtonBox:
+                    "w-full! flex-row-reverse! justify-end! gap-2! group-data-[collapsible=icon]:justify-center! text-sidebar-foreground!",
+                  userButtonOuterIdentifier:
+                    "group-data-[collapsible=icon]:hidden! pl-0!",
                   avatarBox: "size-4!",
-
                 },
               }}
             />
