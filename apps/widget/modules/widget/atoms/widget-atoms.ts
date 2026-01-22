@@ -9,11 +9,16 @@ export const screenAtom = atom<WidgetScreen>("loading");
 export const organizationIdAtom = atom<string | null>(null);
 
 //organization-scoped contact session atom
-export const contactSessionIdAtomFamily = atomFamily((organizationId: string) =>
-  atomWithStorage<Id<"contactSessions"> | null>(
-    `${CONTACT_SESSION_KEY}_${organizationId}`,
-    null
-  )
+export const contactSessionIdAtomFamily = atomFamily(
+  (organizationId?: string | null) => {
+    if (!organizationId) {
+      return atom<Id<"contactSessions"> | null>(null);
+    }
+    return atomWithStorage<Id<"contactSessions"> | null>(
+      `${CONTACT_SESSION_KEY}_${organizationId}`,
+      null
+    );
+  }
 );
 
 export const errorMessageAtom = atom<string | null>(null);
