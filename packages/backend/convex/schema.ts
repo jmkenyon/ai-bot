@@ -17,11 +17,15 @@ export default defineSchema({
         viewPortSize: v.string(),
         currentUrl: v.string(),
         referrer: v.string(),
-      }) 
+      })
     ),
   })
-  .index("by_organizationId", ["organizationId"])
-  .index("by_expired_at", ["expiresAt"]),
+    .index("by_organizationId", {
+      fields: ["organizationId"],
+    })
+    .index("by_expiresAt", {
+      fields: ["expiresAt"],
+    }),
   users: defineTable({
     name: v.string(),
   }),
