@@ -31,6 +31,13 @@ export const create = action({
         message: "Conversation not found",
       });
     }
+    if (conversation.contactSessionId !== args.contactSessionId) {
+      throw new ConvexError({
+        code: "UNAUTHORIZED",
+        message: "Conversation does not belong to contact session",
+      });
+    }
+
     if (conversation.status === "closed") {
       throw new ConvexError({
         code: "FAILED_PRECONDITION",
@@ -48,26 +55,40 @@ export const create = action({
   },
 });
 
-
 export const getMany = query({
-    args: {
-        threadId: v.string(),
-        paginationOpts: paginationOptsValidator,
-        contactSessionId: v.id("contactSessions"),
-    },
-    handler: async (ctx, args) => {
-        const contactSession = await ctx.db.get(args.contactSessionId);
+  args: {
+    threadId: v.string(),
+    paginationOpts: paginationOptsValidator,
+    contactSessionId: v.id("contactSessions"),
+  },
+  handler: async (ctx, args) => {
+    const contactSession = await ctx.db.get(args.contactSessionId);
 
-        if (!contactSession || contactSession.expiresAt < Date.now()) {
-            throw new ConvexError({
-                code: "UNAUTHORIZED",
-                message: "Contact session not found or expired",
-            });
-        }
-        const paginated = await supportAgent.listMessages(ctx, {
-            threadId: args.threadId,
-            paginationOpts: args.paginationOpts,
-        });
-        return paginated;
-    }     
-})
+    if (!contactSession || contactSession.expiresAt < Date.now()) {
+      throw new ConvexError({
+        code: "UNAUTHORIZED",
+        message: "Contact session not found or expired",
+      });
+    }
+
+    const conversation = await ctx.db
+      .query("conversations")
+      .withIndex("by_thread_id", (q) => q.eq("threadId", args.threadId))
+      .unique();
+
+    if (
+      !conversation ||
+      conversation.contactSessionId !== args.contactSessionId
+    ) {
+      throw new ConvexError({
+        code: "UNAUTHORIZED",
+        message: "Conversation not found or does not belong to contact session",
+      });
+    }
+    const paginated = await supportAgent.listMessages(ctx, {
+      threadId: args.threadId,
+      paginationOpts: args.paginationOpts,
+    });
+    return paginated;
+  },
+});
