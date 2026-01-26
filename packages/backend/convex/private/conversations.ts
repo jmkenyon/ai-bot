@@ -1,0 +1,92 @@
+import { query } from "../_generated/server";
+
+import { ConvexError, v } from "convex/values";
+import { supportAgent } from "../system/ai/agents/supportAgent";
+import { MessageDoc } from "@convex-dev/agent";
+import { paginationOptsValidator, PaginationResult } from "convex/server";
+import { Doc, Id } from "../_generated/dataModel";
+
+export const getMany = query({
+  args: {
+    paginationOpts: paginationOptsValidator,
+    status: v.optional(
+      v.union(v.literal("open"), v.literal("escalated"), v.literal("closed"))
+    ),
+  },
+  handler: async (ctx, args) => {
+    const identity = await ctx.auth.getUserIdentity();
+
+    if (identity === null) {
+      throw new ConvexError({
+        code: "UNAUTHORIZED",
+        message: "User not authenticated",
+      });
+    }
+
+    const orgId = identity.orgId as string;
+
+    if (!orgId) {
+      throw new ConvexError({
+        code: "UNAUTHORIZED",
+        message: "User does not belong to an organization",
+      });
+    }
+
+    let conversations: PaginationResult<Doc<"conversations">>;
+
+    if (args.status) {
+      conversations = await ctx.db
+        .query("conversations")
+        .withIndex("by_status_and_organization_id", (q) =>
+          q
+            .eq("status", args.status as Doc<"conversations">["status"])
+            .eq("organizationId", orgId)
+        )
+        .order("desc")
+        .paginate(args.paginationOpts);
+    } else {
+      conversations = await ctx.db
+        .query("conversations")
+        .withIndex("by_organizationId", (q) => q.eq("organizationId", orgId))
+        .order("desc")
+        .paginate(args.paginationOpts);
+    }
+    const conversationsWithAdditonalData = await Promise.all(
+      conversations.page.map(async (conversation) => {
+        let lastMessage: MessageDoc | null = null;
+
+        const contactSession = await ctx.db.get(
+          conversation.contactSessionId as Id<"contactSessions">
+        );
+        if (!contactSession) return null;
+
+        const messages = await supportAgent.listMessages(ctx, {
+          threadId: conversation.threadId,
+          paginationOpts: { numItems: 1, cursor: null },
+        });
+
+        if (messages.page.length > 0) {
+          lastMessage = messages.page[0] ?? null;
+        }
+        return {
+          ...conversation,
+          lastMessage,
+          contactSession,
+        };
+      })
+    );
+    const validConversations = conversationsWithAdditonalData.filter(
+      (
+        conv
+      ): conv is Doc<"conversations"> & {
+        lastMessage: MessageDoc | null;
+        contactSession: Doc<"contactSessions">;
+      } => conv !== null
+    );
+
+    return {
+      ...conversations,
+      page: validConversations,
+    };
+  },
+});
