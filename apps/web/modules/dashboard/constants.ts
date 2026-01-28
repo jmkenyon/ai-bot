@@ -1,2 +1,2 @@
-export const STATUS_FILTER_KEY ="aibot-status-filter"
+export const STATUS_FILTER_KEY ="ezebot-status-filter"
 
