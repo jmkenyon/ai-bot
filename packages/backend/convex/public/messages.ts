@@ -3,6 +3,7 @@ import { action, query } from "../_generated/server";
 import { internal } from "../_generated/api";
 import { supportAgent } from "../system/ai/agents/supportAgent";
 import { paginationOptsValidator } from "convex/server";
+import { resolveConversation } from "../system/ai/tools/resolveConversation";
 
 export const create = action({
   args: {
@@ -50,7 +51,7 @@ export const create = action({
       {
         threadId: args.threadId,
       },
-      { prompt: args.prompt }
+      { prompt: args.prompt, tools: { resolveConversation } }
     );
   },
 });

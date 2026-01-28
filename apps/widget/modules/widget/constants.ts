@@ -8,5 +8,5 @@ export const WIDGET_SCREENS = [
     "contact"
 ] as const;
 
-export const CONTACT_SESSION_KEY = "aibot_contact_session";
+export const CONTACT_SESSION_KEY = "ezebot_contact_session";
 
