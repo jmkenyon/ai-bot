@@ -8,7 +8,7 @@ export const escalateConversation = createTool({
   args: z.object({}),
   handler: async ( ctx) => {
     if (!ctx.threadId) {
-      return "Thread ID is required to resolve a conversation.";
+      return "Thread ID is required to escalate a conversation.";
     }
     await ctx.runMutation(internal.system.conversations.escalate, {
       threadId: ctx.threadId,
