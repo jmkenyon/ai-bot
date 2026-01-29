@@ -9,7 +9,7 @@ import {
 
 interface HintProps {
   text: string;
-  children: React.ReactNode;
+  children: React.ReactElement;
   side?: "top" | "right" | "bottom" | "left";
   align?: "start" | "center" | "end";
 }
