@@ -5,9 +5,9 @@ import { assert } from "convex-helpers";
 import { Id } from "../_generated/dataModel";
 
 const AI_MODELS = {
-  image: openai.chat("gpt-4o-mini"),
-  pdf: openai.chat("gpt-4o"),
-  html: openai.chat("gpt-4o"),
+  image: openai.languageModel("gpt-4o-mini"),
+  pdf: openai.languageModel("gpt-4o"),
+  html: openai.languageModel("gpt-4o"),
 } as const;
 
 const SUPPORTED_IMAGE_TYPES = [
@@ -21,10 +21,31 @@ const SUPPORTED_IMAGE_TYPES = [
 ] as const;
 
 const SYSTEM_PROMPTS = {
-  image:
-    "You are an AI assistant that extracts and describes text content from images. Provide a concise summary of the text found in the image.",
-  pdf: "You are an AI assistant that extracts and summarizes text content from PDF documents. Provide a concise summary of the main points in the document.",
-  html: "You are an AI assistant that extracts and summarizes text content from HTML web pages. Provide a concise summary of the main points on the page.",
+  image: `
+Extract all readable text from the image.
+Do not summarize.
+Do not explain.
+`.trim(),
+  pdf: `
+    You are helping ingest a document into a search system.
+    
+    Rules:
+    - DO NOT reproduce the full document.
+    - DO NOT extract all text.
+    - DO NOT summarize every section.
+    
+    Your task:
+    - Identify the document type.
+    - Extract only high-level structure (section titles if obvious).
+    - Provide a VERY concise overview (max 5 bullet points).
+    
+    If the document is long, be extremely brief.
+    `.trim(),
+  html: `
+    Extract readable text from the HTML.
+    Remove navigation, scripts, and boilerplate.
+    Do NOT summarize or add commentary.
+    `.trim(),
 };
 
 export type ExtractTextContentArgs = {
@@ -56,10 +77,7 @@ export async function extractTextContent(
   }
 
   throw new Error(`Unsupported mime type: ${mimeType}`);
-  
 }
-
-
 
 async function extractTextFileContext(
   ctx: { storage: StorageActionWriter },
@@ -89,7 +107,7 @@ async function extractTextFileContext(
             },
             {
               type: "text",
-              text: "Extract the text and print it in a markdown format without explaining that you'll do so.",
+              text: "Provide a high-level overview only. Do not extract or reproduce full text.",
             },
           ],
         },
@@ -115,12 +133,12 @@ async function extractPdfText(
           {
             type: "file",
             data: new URL(url),
+            mediaType: mimeType,
             filename,
-            mimeType,
           },
           {
             type: "text",
-            text: "Please extract the text from the PDF and print it without explaing that you'll do so.",
+            text: "Provide a high-level overview only. Do not extract or reproduce the full text.",
           },
         ],
       },

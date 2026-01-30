@@ -51,7 +51,7 @@ export const create = action({
       {
         threadId: args.threadId,
       },
-      { prompt: args.prompt, tools: { resolveConversation } }
+      { prompt: args.prompt, tools: { resolveConversation } } as any
     );
   },
 });

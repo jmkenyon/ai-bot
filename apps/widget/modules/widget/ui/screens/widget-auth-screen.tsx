@@ -1,4 +1,4 @@
-"use client"
+"use client";
 
 import { WidgetHeader } from "../components/widget-header";
 import {
@@ -18,23 +18,29 @@ import { useMutation } from "convex/react";
 import { api } from "@workspace/backend/_generated/api";
 import { Doc } from "@workspace/backend/_generated/dataModel";
 import { useAtomValue, useSetAtom } from "jotai";
-import { contactSessionIdAtomFamily, organizationIdAtom, screenAtom } from "../../atoms/widget-atoms";
+import {
+  contactSessionIdAtomFamily,
+  organizationIdAtom,
+  screenAtom,
+} from "../../atoms/widget-atoms";
 
 const formSchema = z.object({
   name: z.string().min(2, "Name must be at least 2 characters long"),
-  email: z.string().email("Invalid email address"),
+  email: z
+    .string()
+    .email("Invalid email address")
+    .refine((email) => email.endsWith("sscinc.com"), {
+      message: "Email must be a company address",
+    }),
 });
 
-
-
 export const WidgetAuthScreen = () => {
-
   const setScreen = useSetAtom(screenAtom);
 
   const organizationId = useAtomValue(organizationIdAtom);
   const setContactSessionId = useSetAtom(
     contactSessionIdAtomFamily(organizationId || "")
-  )
+  );
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
@@ -67,7 +73,7 @@ export const WidgetAuthScreen = () => {
       ...values,
       organizationId,
       metadata,
-    })
+    });
     setContactSessionId(contactSessionId);
     setScreen("selection");
   };

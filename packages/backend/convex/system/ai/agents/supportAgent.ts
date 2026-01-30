@@ -4,7 +4,7 @@ import { components } from "../../../_generated/api";
 
 export const supportAgent = new Agent(components.agent, {
   name: "Support Agent",
-  chat: openai.chat("gpt-4o-mini"),
+  languageModel: openai.languageModel("gpt-4o-mini"),
   instructions: `
   You are an internal support assistant for employees handling Execution Management System (EMS) issues.
   
@@ -22,5 +22,5 @@ export const supportAgent = new Agent(components.agent, {
   - Do not speculate on root causes for serious incidents.
   
   Your goal is to reduce internal support noise while maintaining accuracy, trust, and appropriate escalation.
-  `
+  `,
 });
