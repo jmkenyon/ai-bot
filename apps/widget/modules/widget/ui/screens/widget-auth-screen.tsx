@@ -29,7 +29,7 @@ const formSchema = z.object({
   email: z
     .string()
     .email("Invalid email address")
-    .refine((email) => email.endsWith("sscinc.com"), {
+    .refine((email) => email.trim().toLowerCase().endsWith("@sscinc.com"), {
       message: "Email must be a company address",
     }),
 });

@@ -145,6 +145,8 @@ export const FilesView = () => {
                               className="size-8 p-0"
                               size={"sm"}
                               variant={"ghost"}
+                              aria-label="Open file actions"
+
                             >
                               <MoreHorizontalIcon />
                             </Button>

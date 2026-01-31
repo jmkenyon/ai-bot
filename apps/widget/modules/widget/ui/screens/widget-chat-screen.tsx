@@ -7,7 +7,7 @@ import { Button } from "@workspace/ui/components/button";
 import { useThreadMessages, toUIMessages } from "@convex-dev/agent/react";
 import { WidgetHeader } from "../components/widget-header";
 import { ArrowLeftIcon, MenuIcon } from "lucide-react";
-import {DicebearAvatar} from "@workspace/ui/components/dicebear-avatar";
+import { DicebearAvatar } from "@workspace/ui/components/dicebear-avatar";
 import { useAtomValue, useSetAtom } from "jotai";
 import {
   contactSessionIdAtomFamily,
@@ -39,9 +39,8 @@ import {
   AISuggestions,
 } from "@workspace/ui/components/ai/suggestion";
 import { Form, FormField } from "@workspace/ui/components/form";
-import {useInfiniteScroll} from "@workspace/ui/hooks/use-infinite-scroll";
-import {InfiniteScrollTrigger} from "@workspace/ui/components/infinite-scroll-trigger";
-
+import { useInfiniteScroll } from "@workspace/ui/hooks/use-infinite-scroll";
+import { InfiniteScrollTrigger } from "@workspace/ui/components/infinite-scroll-trigger";
 
 const formSchema = z.object({
   message: z.string().min(1, "Message is required"),
@@ -84,11 +83,12 @@ export const WidgetChatScreen = () => {
     }
   );
 
-  const {topElementRef, handleLoadMore, canLoadMore, isLoadingMore} = useInfiniteScroll({
-    status: messages.status,
-    loadMore: messages.loadMore,
-    loadSize: 10,
-  })
+  const { topElementRef, handleLoadMore, canLoadMore, isLoadingMore } =
+    useInfiniteScroll({
+      status: messages.status,
+      loadMore: messages.loadMore,
+      loadSize: 10,
+    });
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -124,27 +124,38 @@ export const WidgetChatScreen = () => {
       </WidgetHeader>
       <AIConversation>
         <AIConversationContent>
-          <InfiniteScrollTrigger 
+          <InfiniteScrollTrigger
             canLoadMore={canLoadMore}
             isLoadingMore={isLoadingMore}
             onLoadMore={handleLoadMore}
             ref={topElementRef}
           />
           {toUIMessages(messages.results ?? [])?.map((message) => {
+            const text = message.parts
+              .filter((p) => p.type === "text")
+              .map((p) => p.text)
+              .join("");
+
+            if (!text.trim()) return null;
             return (
               <AIMessage
                 key={message.id}
                 from={message.role === "assistant" ? "assistant" : "user"}
               >
                 <AIMessageContent>
-                  <AIResponse>{message.content}</AIResponse>
+                  <AIResponse className="text-black">
+                    {message.parts
+                      .filter((p) => p.type === "text")
+                      .map((p) => p.text)
+                      .join("")}
+                  </AIResponse>
                 </AIMessageContent>
                 {message.role === "assistant" && (
                   <DicebearAvatar
                     imageUrl="/logo.png"
                     seed="assistant"
                     size={32}
-                    />
+                  />
                 )}
               </AIMessage>
             );
@@ -158,39 +169,38 @@ export const WidgetChatScreen = () => {
           className="rounded-none border-x-0 border-b-0"
         >
           <FormField
-          control={form.control}
-          disabled={conversation?.status === "closed"}
-          name="message"
-          render={({ field }) => (
-            <AIInputTextarea
+            control={form.control}
             disabled={conversation?.status === "closed"}
-            onChange={field.onChange}
-            onKeyDown={(e)=> {
-              if (e.key === "Enter" && !e.shiftKey) {
-                e.preventDefault();
-                form.handleSubmit(onSubmit)();
-              }}
-            }
-              placeholder={
-                conversation?.status === "closed"
-                  ? "Conversation is closed"
-                  : "Type your message..."
-              }
-              value={field.value}
-            />
-          )}
+            name="message"
+            render={({ field }) => (
+              <AIInputTextarea
+                disabled={conversation?.status === "closed"}
+                onChange={field.onChange}
+                onKeyDown={(e) => {
+                  if (e.key === "Enter" && !e.shiftKey) {
+                    e.preventDefault();
+                    form.handleSubmit(onSubmit)();
+                  }
+                }}
+                placeholder={
+                  conversation?.status === "closed"
+                    ? "Conversation is closed"
+                    : "Type your message..."
+                }
+                value={field.value}
+              />
+            )}
           />
           <AIInputToolbar>
-            <AIInputTools/>
+            <AIInputTools />
             <AIInputSubmit
-            disabled={conversation?.status === "closed" || !form.formState.isValid}
-            status="ready"
-            type="submit"
-            aria-label="Send message"
-            >
-
-
-            </AIInputSubmit>
+              disabled={
+                conversation?.status === "closed" || !form.formState.isValid
+              }
+              status="ready"
+              type="submit"
+              aria-label="Send message"
+            ></AIInputSubmit>
           </AIInputToolbar>
         </AIInput>
       </Form>

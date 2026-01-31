@@ -159,8 +159,16 @@ export const addFile = action({
       contentHash: await contentHashFromArrayBuffer(bytes),
     });
     if (!created) {
-      console.debug("File already exists, deleting uploaded blob");
-      await ctx.storage.delete(storageId);
+      // Retrieve the existing entry to get its storage URL
+      const existingEntry = await rag.getEntry(ctx, { entryId });
+      const existingStorageId = (
+        existingEntry?.metadata as EntryMetadata | undefined
+      )?.storageId;
+      return {
+        url: existingStorageId
+          ? await ctx.storage.getUrl(existingStorageId)
+          : null,
+      };
     }
     return {
       url: await ctx.storage.getUrl(storageId),
@@ -255,14 +263,7 @@ async function convertEntrytoPublicFile(
       // Hide orphaned entries forever
       throw new Error("Orphaned entry");
     }
-    try {
-      const storageMetadata = await ctx.db.system.get(storageId);
-      if (storageMetadata) {
-        fileSize = formatFileSize(storageMetadata.size);
-      }
-    } catch (e) {
-      console.error("Failed to get storage metadata", e);
-    }
+    fileSize = formatFileSize(storageMetadata.size);
   }
 
   const filename = entry.key || "unknown";

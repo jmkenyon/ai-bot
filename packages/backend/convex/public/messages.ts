@@ -4,6 +4,7 @@ import { internal } from "../_generated/api";
 import { supportAgent } from "../system/ai/agents/supportAgent";
 import { paginationOptsValidator } from "convex/server";
 import { resolveConversation } from "../system/ai/tools/resolveConversation";
+import { search } from "../system/ai/tools/search";
 
 export const create = action({
   args: {
@@ -46,12 +47,22 @@ export const create = action({
       });
     }
 
+ 
+
+
+
     await supportAgent.generateText(
       ctx,
       {
         threadId: args.threadId,
       },
-      { prompt: args.prompt, tools: { resolveConversation } } as any
+      {
+        prompt: args.prompt,
+        tools: {
+          resolveConversation,
+          search,
+        },
+      } as any
     );
   },
 });
