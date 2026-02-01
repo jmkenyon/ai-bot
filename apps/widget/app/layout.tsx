@@ -9,7 +9,7 @@ const inter = Inter({
 });
 
 export const metadata: Metadata = {
-  title: "EzeBot Support",
+  title: "EzeBot Chat",
   description:
     "AI-powered support chat for quick answers from your company knowledge base.",
 };
