@@ -1,11 +1,7 @@
-"use client";
-
 import { WidgetView } from "@/modules/widget/ui/views/widget-view";
 
 const Page = () => {
-  const organizationId = "org_38L8q72qKC4CORRJFsJZwaGtpKk"
-
-
+  const organizationId = process.env.ORGANISATION_ID!
 
   return <WidgetView  organizationId={organizationId}/>;
 };
