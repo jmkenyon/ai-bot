@@ -1,5 +1,5 @@
 import { mutation, query } from "../_generated/server";
-import { components } from "../_generated/api";
+import { components, internal } from "../_generated/api";
 import { ConvexError, v } from "convex/values";
 import { supportAgent } from "../system/ai/agents/supportAgent";
 import { saveMessage, MessageDoc } from "@convex-dev/agent";
@@ -102,6 +102,10 @@ export const create = mutation({
         message: "Contact session not found",
       });
     }
+
+    await ctx.runMutation(internal.system.contactSessions.refresh, {
+      contactSessionId: args.contactSessionId,
+    })
 
     const { threadId } = await supportAgent.createThread(ctx, {
       userId: args.organizationId,
