@@ -22,7 +22,7 @@ const SUPPORTED_IMAGE_TYPES = [
 
 const SYSTEM_PROMPTS = {
   image:
-    "You are an AI assistant that extracts and describes text content from images. Provide a concise summary of the text found in the image.",
+  "You are an AI assistant that extracts text content from images. Extract all text verbatim. Do NOT summarize or add commentary.",
   pdf: `
     Extract the document text faithfully.
     
@@ -35,7 +35,7 @@ const SYSTEM_PROMPTS = {
     
     Output plain text only.
     `.trim(),
-  html: "You are an AI assistant that extracts and summarizes text content from HTML web pages. Provide a concise summary of the main points on the page.",
+  html: "You are an AI assistant that extracts text content from HTML web pages. Extract all text faithfully. Do NOT summarize.",
 };
 
 export type ExtractTextContentArgs = {
@@ -128,7 +128,7 @@ async function extractPdfText(
           },
           {
             type: "text",
-            text: "Please extract the text from the PDF and print it without explaing that you'll do so.",
+            text: "Please extract the text from the PDF and print it without explaining that you'll do so.",
           },
         ],
       },

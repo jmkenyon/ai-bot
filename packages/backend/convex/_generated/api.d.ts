@@ -8,6 +8,7 @@
  * @module
  */
 
+import type * as constants from "../constants.js";
 import type * as lib_extractTextContent from "../lib/extractTextContent.js";
 import type * as playground from "../playground.js";
 import type * as private_conversations from "../private/conversations.js";
@@ -34,6 +35,7 @@ import type {
 } from "convex/server";
 
 declare const fullApi: ApiFromModules<{
+  constants: typeof constants;
   "lib/extractTextContent": typeof lib_extractTextContent;
   playground: typeof playground;
   "private/conversations": typeof private_conversations;

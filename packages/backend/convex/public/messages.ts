@@ -47,6 +47,9 @@ export const create = action({
       });
     }
 
+    // Refresh contact session to extend its validity
+
+
  
 
 
