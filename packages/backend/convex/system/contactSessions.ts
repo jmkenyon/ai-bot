@@ -3,14 +3,14 @@ import { internalMutation, internalQuery } from "../_generated/server";
 import { SESSION_DURATION } from "../constants";
 
 
-const AUTO_REFRESH_THRESHOLD_MS = 4 * 60 * 60 * 1000; // 5 minutes
+const AUTO_REFRESH_THRESHOLD_MS = 4 * 60 * 60 * 1000; // 4 hours
 
 export const refresh = internalMutation({
   args: {
     contactSessionId: v.id("contactSessions"),
   },
   handler: async (ctx, args) => {
-    const contactSession = await ctx.db.get(args.contactSessionId);
+    const contactSession = await ctx.db .get(args.contactSessionId);
 
     if (!contactSession) {
       throw new ConvexError({

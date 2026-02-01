@@ -34,10 +34,7 @@ import {
   AIMessageContent,
 } from "@workspace/ui/components/ai/message";
 import { AIResponse } from "@workspace/ui/components/ai/response";
-import {
-  AISuggestion,
-  AISuggestions,
-} from "@workspace/ui/components/ai/suggestion";
+
 import { Form, FormField } from "@workspace/ui/components/form";
 import { useInfiniteScroll } from "@workspace/ui/hooks/use-infinite-scroll";
 import { InfiniteScrollTrigger } from "@workspace/ui/components/infinite-scroll-trigger";
@@ -161,6 +158,7 @@ export const WidgetChatScreen = () => {
             );
           })}
         </AIConversationContent>
+        <AIConversationScrollButton />
       </AIConversation>
 
       <Form {...form}>

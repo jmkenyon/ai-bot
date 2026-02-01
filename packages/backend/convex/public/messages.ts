@@ -48,11 +48,9 @@ export const create = action({
     }
 
     // Refresh contact session to extend its validity
-
-
- 
-
-
+    await ctx.runMutation(internal.system.contactSessions.refresh, {
+      contactSessionId: args.contactSessionId,
+    });
 
     await supportAgent.generateText(
       ctx,

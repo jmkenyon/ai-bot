@@ -2,14 +2,9 @@
 
 import { OrganizationSwitcher, UserButton } from "@clerk/nextjs";
 import {
-  CreditCardIcon,
   InboxIcon,
-  LayoutDashboardIcon,
   LibraryBigIcon,
-  Mic,
-  PaletteIcon,
 } from "lucide-react";
-import Image from "next/image";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import {
@@ -37,27 +32,6 @@ const customerSupportItems = [
     title: "Knowledge Base",
     url: "/files",
     icon: LibraryBigIcon,
-  },
-];
-
-const configurationItems = [
-  {
-    title: "Widget Customization",
-    url: "/customization",
-    icon: PaletteIcon,
-  },
-  {
-    title: "Integrations",
-    url: "/integrations",
-    icon: LayoutDashboardIcon,
-  },
-];
-
-const accountItems = [
-  {
-    title: "Plan & Billing",
-    url: "/billing",
-    icon: CreditCardIcon,
   },
 ];
 
@@ -115,61 +89,7 @@ export const DashboardSidebar = () => {
                     asChild
                     className={cn(
                       isActive(item.url) &&
-                        "bg-gradient-to-b from-sidebar-primary to-blue-600! text-sidebar-primary-foreground! hover:to-blue-600/90! "
-                    )}
-                    tooltip={item.title}
-                    isActive={isActive(item.url)}
-                  >
-                    <Link href={item.url}>
-                      <item.icon className="size-5" />
-                      <span>{item.title}</span>
-                    </Link>
-                  </SidebarMenuButton>
-                </SidebarMenuItem>
-              ))}
-            </SidebarMenu>
-          </SidebarGroupContent>
-        </SidebarGroup>
-
-        {/* CONFIGURATION */}
-        <SidebarGroup>
-          <SidebarGroupLabel>Configuration</SidebarGroupLabel>
-          <SidebarGroupContent>
-            <SidebarMenu>
-              {configurationItems.map((item) => (
-                <SidebarMenuItem key={item.url}>
-                  <SidebarMenuButton
-                    className={cn(
-                      isActive(item.url) &&
-                        "bg-gradient-to-b from-sidebar-primary to-blue-600! text-sidebar-primary-foreground! hover:to-blue-600/90! "
-                    )}
-                    asChild
-                    tooltip={item.title}
-                    isActive={isActive(item.url)}
-                  >
-                    <Link href={item.url}>
-                      <item.icon className="size-5" />
-                      <span>{item.title}</span>
-                    </Link>
-                  </SidebarMenuButton>
-                </SidebarMenuItem>
-              ))}
-            </SidebarMenu>
-          </SidebarGroupContent>
-        </SidebarGroup>
-
-        {/* ACCOUNT */}
-        <SidebarGroup>
-          <SidebarGroupLabel>Account</SidebarGroupLabel>
-          <SidebarGroupContent>
-            <SidebarMenu>
-              {accountItems.map((item) => (
-                <SidebarMenuItem key={item.url}>
-                  <SidebarMenuButton
-                    asChild
-                    className={cn(
-                      isActive(item.url) &&
-                        "bg-gradient-to-b from-sidebar-primary to-blue-600! text-sidebar-primary-foreground! hover:to-blue-600/90! "
+                        "bg-linear-to-b from-sidebar-primary to-blue-600! text-sidebar-primary-foreground! hover:to-blue-600/90! "
                     )}
                     tooltip={item.title}
                     isActive={isActive(item.url)}

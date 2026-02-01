@@ -45,7 +45,6 @@ export const search = createTool({
       .filter((t) => t !== null)
       .join(", ")}. Here is the context: \n\n${searchResult.text}`;
 
-    console.log(contentText);
 
     const response = await generateText({
       messages: [

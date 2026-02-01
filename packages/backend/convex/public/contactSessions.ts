@@ -2,8 +2,6 @@ import { v } from "convex/values";
 import { mutation } from "../_generated/server";
 import { SESSION_DURATION } from "../constants";
 
-// 24 hours in milliseconds
-
 export const create = mutation({
   args: {
     name: v.string(),
