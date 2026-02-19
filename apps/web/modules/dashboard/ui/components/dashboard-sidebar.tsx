@@ -2,7 +2,7 @@
 
 import { OrganizationSwitcher, UserButton } from "@clerk/nextjs";
 import {
-  InboxIcon,sid
+  InboxIcon,
   LibraryBigIcon,
 } from "lucide-react";
 import Link from "next/link";
