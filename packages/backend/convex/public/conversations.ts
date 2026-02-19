@@ -115,7 +115,7 @@ export const create = mutation({
       threadId,
       message: {
         role: "assistant",
-        content: "Hello, how can I help you today?",
+        content: "Ask me to interpret an existing rule or write a new one. What are you working on?",
       },
     });
 
