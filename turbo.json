@@ -6,7 +6,7 @@
       "dependsOn": ["^build"],
       "inputs": ["$TURBO_DEFAULT$", ".env*"],
       "outputs": [".next/**", "!.next/cache/**", "dist/**"],
-      "env": ["ORGANISATION_ID"]
+      "env": ["ORGANISATION_ID", "CLERK_SECRET_KEY"]
     },
     "lint": {
       "dependsOn": ["^lint"]
