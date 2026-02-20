@@ -91,7 +91,7 @@ Return the FULL corrected rule on ONE single line.
         },
         { role: "user", content: args.rule },
       ],
-      model: openai.languageModel("gpt-4o"),
+      model: openai.languageModel("gpt-4o-mini"),
     });
 
     return response.text;

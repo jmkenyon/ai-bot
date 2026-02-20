@@ -53,6 +53,17 @@ export const create = action({
       contactSessionId: args.contactSessionId,
     });
 
+    const rulePattern = /#\d+\[[^\]]*|^\d+:\d+\[[^\]]*/m;
+
+    if (rulePattern.test(args.prompt)) {
+      await supportAgent.generateText(ctx, { threadId: args.threadId }, {
+        prompt: args.prompt,
+        tools: { syntaxCheck },
+        forceTool: "syntaxCheck",
+      } as any);
+      return;
+    }
+
     await supportAgent.generateText(
       ctx,
       {
@@ -62,7 +73,7 @@ export const create = action({
         prompt: args.prompt,
         tools: {
           resolveConversation,
-          syntaxCheck, 
+          syntaxCheck,
           search,
         },
       } as any

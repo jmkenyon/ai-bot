@@ -6,8 +6,8 @@ import { Id } from "../_generated/dataModel";
 
 const AI_MODELS = {
   image: openai.languageModel("gpt-4o-mini"),
-  pdf: openai.languageModel("gpt-4o"),
-  html: openai.languageModel("gpt-4o"),
+  pdf: openai.languageModel("gpt-4o-mini"),
+  html: openai.languageModel("gpt-4o-mini"),
 } as const;
 
 const SUPPORTED_IMAGE_TYPES = [
