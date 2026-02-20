@@ -3,9 +3,8 @@ import { action, query } from "../_generated/server";
 import { internal } from "../_generated/api";
 import { supportAgent } from "../system/ai/agents/supportAgent";
 import { paginationOptsValidator } from "convex/server";
-import { resolveConversation } from "../system/ai/tools/resolveConversation";
-import { search } from "../system/ai/tools/search";
-import { syntaxCheck } from "../system/ai/tools/syntax";
+import { syntaxCheckRule } from "../system/ai/tools/syntax";
+
 
 export const create = action({
   args: {
@@ -52,6 +51,15 @@ export const create = action({
     await ctx.runMutation(internal.system.contactSessions.refresh, {
       contactSessionId: args.contactSessionId,
     });
+    
+    // Detect if a rule is present and run syntax check BEFORE the agent
+    const rulePattern = /#\d+\[|^\d+:\d+\[/m;
+    let prompt = args.prompt;
+    
+    if (rulePattern.test(args.prompt)) {
+      const syntaxResult = syntaxCheckRule(args.prompt);
+      prompt = `[SYNTAX CHECK RESULT]\n${syntaxResult}\n\n[USER MESSAGE]\n${args.prompt}`;
+    }
     await supportAgent.generateText(ctx, { threadId: args.threadId }, {
       prompt: args.prompt,
     } as any);
