@@ -60,8 +60,17 @@ export const create = action({
       const syntaxResult = syntaxCheckRule(args.prompt);
       prompt = `[SYNTAX CHECK RESULT]\n${syntaxResult}\n\n[USER MESSAGE]\n${args.prompt}`;
     }
+    await supportAgent.saveMessage(ctx, {
+      threadId: args.threadId,
+      message: {
+        role: "user",
+        content: args.prompt,
+      },
+    });
+    
     await supportAgent.generateText(ctx, { threadId: args.threadId }, {
-      prompt
+      saveUserMessage: false,
+      prompt,
     } as any);
   },
 });

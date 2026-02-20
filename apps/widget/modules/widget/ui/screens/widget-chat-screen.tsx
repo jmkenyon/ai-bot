@@ -127,36 +127,44 @@ export const WidgetChatScreen = () => {
             onLoadMore={handleLoadMore}
             ref={topElementRef}
           />
-          {toUIMessages(messages.results ?? [])?.map((message) => {
-            const text = message.parts
-              .filter((p) => p.type === "text")
-              .map((p) => p.text)
-              .join("");
+          {toUIMessages(messages.results ?? [])
+            ?.filter((m) => {
+              const text = m.parts
+                .filter((p) => p.type === "text")
+                .map((p) => p.text)
+                .join("");
+              return !text.startsWith("[SYNTAX CHECK RESULT]");
+            })
+            .map((message) => {
+              const text = message.parts
+                .filter((p) => p.type === "text")
+                .map((p) => p.text)
+                .join("");
 
-            if (!text.trim()) return null;
-            return (
-              <AIMessage
-                key={message.id}
-                from={message.role === "assistant" ? "assistant" : "user"}
-              >
-                <AIMessageContent>
-                  <AIResponse className="text-black">
-                    {message.parts
-                      .filter((p) => p.type === "text")
-                      .map((p) => p.text)
-                      .join("")}
-                  </AIResponse>
-                </AIMessageContent>
-                {message.role === "assistant" && (
-                  <DicebearAvatar
-                    imageUrl="/logo.png"
-                    seed="assistant"
-                    size={32}
-                  />
-                )}
-              </AIMessage>
-            );
-          })}
+              if (!text.trim()) return null;
+              return (
+                <AIMessage
+                  key={message.id}
+                  from={message.role === "assistant" ? "assistant" : "user"}
+                >
+                  <AIMessageContent>
+                    <AIResponse className="text-black">
+                      {message.parts
+                        .filter((p) => p.type === "text")
+                        .map((p) => p.text)
+                        .join("")}
+                    </AIResponse>
+                  </AIMessageContent>
+                  {message.role === "assistant" && (
+                    <DicebearAvatar
+                      imageUrl="/logo.png"
+                      seed="assistant"
+                      size={32}
+                    />
+                  )}
+                </AIMessage>
+              );
+            })}
         </AIConversationContent>
         <AIConversationScrollButton />
       </AIConversation>
