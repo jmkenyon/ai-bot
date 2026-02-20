@@ -54,11 +54,6 @@ export const create = action({
     });
     await supportAgent.generateText(ctx, { threadId: args.threadId }, {
       prompt: args.prompt,
-      tools: {
-        resolveConversation,
-        syntaxCheck,
-        search,
-      },
     } as any);
   },
 });

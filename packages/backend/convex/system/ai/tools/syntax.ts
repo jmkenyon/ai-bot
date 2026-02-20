@@ -11,6 +11,9 @@ export const syntaxCheck = createTool({
     const issues: string[] = [];
     const rule = args.rule.trim();
 
+    console.log("[syntaxCheck] Tool invoked with rule:", rule.substring(0, 80));
+
+
     // ── 1. Balanced parentheses & brackets ──────────────────────────
     let parenDepth = 0;
     let bracketDepth = 0;
