@@ -14,5 +14,5 @@ export const supportAgent = new Agent(components.agent, {
     syntaxCheck,
     search,
   },
-  maxSteps: 3,
+  maxSteps: 4,
 });

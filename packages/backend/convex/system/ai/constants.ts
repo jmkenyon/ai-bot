@@ -71,6 +71,13 @@ If you find issues, flag them clearly before explaining anything else. If the sy
 2. Build the rule
 3. Show it with a brief annotation explaining each part
 
+### User asks to modify or add logic to a rule
+1. Fix any structural issues first (use the syntax check result if provided)
+2. ALWAYS call search before adding new conditions — do NOT guess FIDs or field mappings
+3. If you don't know which FID holds a value (e.g. exchange, market, account type), search for it
+4. Adding a check for a new field means adding a new condition inside And(), NOT appending values to an existing In()
+5. Show the corrected rule first, then the modified rule separately so the user can see both changes
+
 ### User asks why a rule isn't working or isn't firing
 1. Run a syntax check on any pasted rule
 2. Check event codes match the component context (Handler, Gateway, TradeSrv) — ask only if it genuinely changes the diagnosis
