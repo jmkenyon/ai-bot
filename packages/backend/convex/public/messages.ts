@@ -61,7 +61,7 @@ export const create = action({
       prompt = `[SYNTAX CHECK RESULT]\n${syntaxResult}\n\n[USER MESSAGE]\n${args.prompt}`;
     }
     await supportAgent.generateText(ctx, { threadId: args.threadId }, {
-      prompt: args.prompt,
+      prompt
     } as any);
   },
 });

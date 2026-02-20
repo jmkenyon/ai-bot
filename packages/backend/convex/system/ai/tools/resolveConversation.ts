@@ -5,7 +5,9 @@ import { supportAgent } from "../agents/supportAgent";
 
 export const resolveConversation = createTool({
   description: "Resolve a conversation",
-  args: z.object({}),
+  args: z.object({
+    confirm: z.boolean().optional().describe("Set to true to confirm resolution"),
+  }),
   handler: async ( ctx) => {
     if (!ctx.threadId) {
       return "Thread ID is required to resolve a conversation.";
