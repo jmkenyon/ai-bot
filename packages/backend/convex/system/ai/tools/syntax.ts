@@ -5,7 +5,7 @@ import z from "zod";
 
 
 export const syntaxCheck = createTool({
-    description: "Check the syntax of a pasted conversion rule. Use this whenever a user pastes a rule, before searching.",
+    description: "ALWAYS call this first when a user pastes a conversion rule. A pasted rule contains patterns like #123[NR]= or FID:type= or starts with a FID number. Do not call search until syntaxCheck has been called first.",
     args: z.object({
       rule: z.string().describe("The conversion rule to syntax check."),
     }),
