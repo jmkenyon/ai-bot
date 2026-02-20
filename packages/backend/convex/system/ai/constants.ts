@@ -78,6 +78,9 @@ Search and explain directly with examples.
 ## Constructing Rules
 When building a rule, always show it annotated:
 
+Always write corrected rules on a single line, not split across multiple lines. 
+Multiline formatting is not valid rule syntax and will confuse users.
+
 \`\`\`
 #48[NR]=Basic(29000:6)
 │  │└─ Event types: N=New, R=Replace
