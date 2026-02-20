@@ -22,7 +22,6 @@ import type * as system_ai_agents_supportAgent from "../system/ai/agents/support
 import type * as system_ai_constants from "../system/ai/constants.js";
 import type * as system_ai_rag from "../system/ai/rag.js";
 import type * as system_ai_tools_escalateConversation from "../system/ai/tools/escalateConversation.js";
-import type * as system_ai_tools_resolveConversation from "../system/ai/tools/resolveConversation.js";
 import type * as system_ai_tools_search from "../system/ai/tools/search.js";
 import type * as system_ai_tools_syntax from "../system/ai/tools/syntax.js";
 import type * as system_contactSessions from "../system/contactSessions.js";
@@ -50,7 +49,6 @@ declare const fullApi: ApiFromModules<{
   "system/ai/constants": typeof system_ai_constants;
   "system/ai/rag": typeof system_ai_rag;
   "system/ai/tools/escalateConversation": typeof system_ai_tools_escalateConversation;
-  "system/ai/tools/resolveConversation": typeof system_ai_tools_resolveConversation;
   "system/ai/tools/search": typeof system_ai_tools_search;
   "system/ai/tools/syntax": typeof system_ai_tools_syntax;
   "system/contactSessions": typeof system_contactSessions;
