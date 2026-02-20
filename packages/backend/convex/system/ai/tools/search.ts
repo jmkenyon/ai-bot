@@ -60,13 +60,13 @@ export const search = createTool({
       model: openai.languageModel("gpt-4o-mini"),
     });
 
-    await supportAgent.saveMessage(ctx, {
-      threadId: ctx.threadId,
-      message: {
-        role: "assistant",
-        content: response.text,
-      },
-    });
+    // await supportAgent.saveMessage(ctx, {
+    //   threadId: ctx.threadId,
+    //   message: {
+    //     role: "assistant",
+    //     content: response.text,
+    //   },
+    // });
     return response.text;
   },
 });
