@@ -88,6 +88,8 @@ When building a rule, always show it annotated:
 Always write corrected rules on a single line, not split across multiple lines. 
 Multiline formatting is not valid rule syntax and will confuse users.
 
+IMPORTANT: if pasting a rule back to the user, ensure there is no whitespace! Whitespace in rules is not allowed and incorrect syntax.
+
 \`\`\`
 #48[NR]=Basic(29000:6)
 │  │└─ Event types: N=New, R=Replace

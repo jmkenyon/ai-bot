@@ -5,7 +5,6 @@ import { supportAgent } from "../system/ai/agents/supportAgent";
 import { paginationOptsValidator } from "convex/server";
 import { syntaxCheckRule } from "../system/ai/tools/syntax";
 
-
 export const create = action({
   args: {
     prompt: v.string(),
@@ -51,26 +50,30 @@ export const create = action({
     await ctx.runMutation(internal.system.contactSessions.refresh, {
       contactSessionId: args.contactSessionId,
     });
-    
+
     // Detect if a rule is present and run syntax check BEFORE the agent
     const rulePattern = /#\d+\[|^\d+:\d+\[/m;
     let prompt = args.prompt;
-    
+    let saveUserMessage = true;
+
+
     if (rulePattern.test(args.prompt)) {
       const syntaxResult = syntaxCheckRule(args.prompt);
       prompt = `[SYNTAX CHECK RESULT]\n${syntaxResult}\n\n[USER MESSAGE]\n${args.prompt}`;
+
+      await supportAgent.saveMessage(ctx, {
+        threadId: args.threadId,
+        message: {
+          role: "user",
+          content: args.prompt,
+        },
+      });
+      saveUserMessage = false;
     }
-    await supportAgent.saveMessage(ctx, {
-      threadId: args.threadId,
-      message: {
-        role: "user",
-        content: args.prompt,
-      },
-    });
-    
+
     await supportAgent.generateText(ctx, { threadId: args.threadId }, {
-      saveUserMessage: false,
       prompt,
+      ...(saveUserMessage ? {} : { saveUserMessage: false }),
     } as any);
   },
 });
