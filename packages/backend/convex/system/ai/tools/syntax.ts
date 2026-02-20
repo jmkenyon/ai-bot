@@ -32,8 +32,7 @@ export const syntaxCheck = createTool({
       if (ch === ")") {
         parenDepth--;
         parenStack.pop();
-        if (parenDepth < 0)
-          issues.push(`Unexpected ')' at position ${i}`);
+        if (parenDepth < 0) issues.push(`Unexpected ')' at position ${i}`);
       }
       if (ch === "[") {
         bracketDepth++;
@@ -41,8 +40,7 @@ export const syntaxCheck = createTool({
       }
       if (ch === "]") {
         bracketDepth--;
-        if (bracketDepth < 0)
-          issues.push(`Unexpected ']' at position ${i}`);
+        if (bracketDepth < 0) issues.push(`Unexpected ']' at position ${i}`);
       }
     }
     if (parenDepth > 0) {
@@ -51,9 +49,7 @@ export const syntaxCheck = createTool({
       );
     }
     if (parenDepth < 0) {
-      issues.push(
-        `Unbalanced parentheses: ${Math.abs(parenDepth)} extra ')'`
-      );
+      issues.push(`Unbalanced parentheses: ${Math.abs(parenDepth)} extra ')'`);
     }
     if (bracketDepth > 0) {
       issues.push(
@@ -116,7 +112,11 @@ export const syntaxCheck = createTool({
           }
         }
       }
-      return { body: source.substring(start, end), startIdx: start, endIdx: end };
+      return {
+        body: source.substring(start, end),
+        startIdx: start,
+        endIdx: end,
+      };
     }
 
     // ── 4. Helper: split top-level arguments ────────────────────────
@@ -154,22 +154,29 @@ export const syntaxCheck = createTool({
       const condArgs = splitTopLevelArgs(conditionalInfo.body);
       if (condArgs.length !== 3) {
         const argSummary = condArgs
-          .map((a, i) => `  arg${i + 1}: ${a.length > 50 ? a.substring(0, 50) + "..." : a}`)
+          .map(
+            (a, i) =>
+              `  arg${i + 1}: ${a.length > 50 ? a.substring(0, 50) + "..." : a}`
+          )
           .join("\n");
         issues.push(
           `Conditional() requires exactly 3 arguments (condition, trueBranch, falseBranch) — found ${condArgs.length}:\n${argSummary}`
         );
       } else {
-        // Check that trueBranch and falseBranch are action-type functions
-        const actionPattern = /^(Replace|Ignore|Remove|Constant|Basic|Conditional)\(/;
-        if (!actionPattern.test(condArgs[1])) {
+        const [condition, trueBranch, falseBranch] = condArgs;
+
+        const actionPattern =
+          /^(Replace|Ignore|Remove|Constant|Basic|Conditional)\(/;
+
+        if (!trueBranch || !actionPattern.test(trueBranch)) {
           issues.push(
-            `Conditional() arg 2 (trueBranch) should be an action like Replace()/Ignore()/Remove() — found: ${condArgs[1].substring(0, 40)}`
+            `Conditional() arg 2 (trueBranch) should be an action like Replace()/Ignore()/Remove() — found: ${trueBranch ?? "undefined"}`
           );
         }
-        if (!actionPattern.test(condArgs[2])) {
+
+        if (!falseBranch || !actionPattern.test(falseBranch)) {
           issues.push(
-            `Conditional() arg 3 (falseBranch) should be an action like Replace()/Ignore()/Remove() — found: ${condArgs[2].substring(0, 40)}`
+            `Conditional() arg 3 (falseBranch) should be an action like Replace()/Ignore()/Remove() — found: ${falseBranch ?? "undefined"}`
           );
         }
       }
@@ -185,7 +192,7 @@ export const syntaxCheck = createTool({
           if (actionMatch) {
             issues.push(
               `'${actionMatch[1]}()' is an action, not a condition — it must NOT be inside ${funcName}(). ` +
-              `This usually means ${funcName}() is missing its closing ')' before '${actionMatch[1]}()'.`
+                `This usually means ${funcName}() is missing its closing ')' before '${actionMatch[1]}()'.`
             );
           }
         }
