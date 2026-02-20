@@ -66,6 +66,7 @@ export const WidgetLoadingScreen = ({
         }
       })
       .catch((error) => {
+        console.log(error)
         setErrorMessage("An error occurred while validating the organization.");
         setScreen("error");
       });
