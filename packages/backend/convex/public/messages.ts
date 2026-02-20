@@ -52,32 +52,14 @@ export const create = action({
     await ctx.runMutation(internal.system.contactSessions.refresh, {
       contactSessionId: args.contactSessionId,
     });
-
-    const rulePattern = /#\d+\[[^\]]*|^\d+:\d+\[[^\]]*/m;
-
-    if (rulePattern.test(args.prompt)) {
-      await supportAgent.generateText(ctx, { threadId: args.threadId }, {
-        prompt: args.prompt,
-        tools: { syntaxCheck },
-        forceTool: "syntaxCheck",
-      } as any);
-      return;
-    }
-
-    await supportAgent.generateText(
-      ctx,
-      {
-        threadId: args.threadId,
+    await supportAgent.generateText(ctx, { threadId: args.threadId }, {
+      prompt: args.prompt,
+      tools: {
+        resolveConversation,
+        syntaxCheck,
+        search,
       },
-      {
-        prompt: args.prompt,
-        tools: {
-          resolveConversation,
-          syntaxCheck,
-          search,
-        },
-      } as any
-    );
+    } as any);
   },
 });
 

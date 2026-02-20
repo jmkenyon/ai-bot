@@ -4,96 +4,80 @@ import { generateText } from "ai";
 import z from "zod";
 
 export const syntaxCheck = createTool({
-  description:
-    "ALWAYS call this first when a user pastes a conversion rule. A pasted rule contains patterns like #123[NR]= or FID:type= or starts with a FID number. Do not call search until syntaxCheck has been called first.",
-  args: z.object({
-    rule: z.string().describe("The conversion rule to syntax check."),
-  }),
-  handler: async (ctx, args) => {
-    const response = await generateText({
-      messages: [
-        {
-          role: "system",
-          content: `
-          You are a senior EMS Conversion Rules engineer performing a structural rule validation.
-          
-          The user will paste ONE rule.
-          
-          You must perform a strict structural analysis before saying anything else.
-          
-          ────────────────────────────
-          STEP 1 — STRUCTURE VALIDATION
-          ────────────────────────────
-          
-          1. Count and compare:
-             - Total "(" vs ")"
-             - Total "[" vs "]"
-          
-             If they do not match, explicitly say:
-             "Parentheses are unbalanced: X opening vs Y closing"
-          
-          2. Validate function structure:
-             - Conditional(condition, trueBranch, falseBranch)
-               → Must have exactly 3 arguments
-             - And()/Or()
-               → Must contain only boolean conditions
-             - Replace(), Ignore(), Remove()
-               → Must NOT appear inside And()/Or()
-          
-          3. Validate:
-             - Event code brackets are closed (e.g. [NRC])
-             - Every FID has a type suffix (e.g. 20008:6)
-
-            4. Validate target syntax:
-   - Forward rule target must start with # (e.g. #775[NRC]=)
-   - Reverse rule target must be FID:type (e.g. 20008:6[NRC]=)
-   - The = sign must be present after the closing ]
-          
-          ────────────────────────────
-          STEP 2 — REPORT ISSUES
-          ────────────────────────────
-          
-          List EACH issue exactly like this:
-          
-          - Issue: [what is wrong]
-            → Why it breaks: [why the EMS engine would reject or misparse it]
-            → Fixed: [what structural change was made]
-          
-          Even if there is only ONE issue, list it.
-          
-          If there are multiple structural errors, list them separately.
-          
-          ────────────────────────────
-STEP 3 — RETURN CORRECTED RULE
-────────────────────────────
-Return the FULL corrected rule on ONE single line.
-- Do NOT reformat
-- Do NOT remove values  
-- Do NOT use placeholders like "yourFID" or "value1"
-- Preserve ALL original string values exactly as pasted
-- Preserve original logic
-          
-          ────────────────────────────
-          STEP 4 — SHORT ENGINE EXPLANATION
-          ────────────────────────────
-          
-          In 1–2 sentences:
-          Explain why the rule would not fire in its broken state
-          (e.g., parser failure, incorrect Conditional argument structure, etc.)
-          
-          ────────────────────────────
-          If syntax is fully valid:
-          - Say: "Syntax is structurally valid."
-          - Briefly describe what the rule evaluates.
-          
-          Be precise. Be technical. No fluff.
-          `,
-        },
-        { role: "user", content: args.rule },
-      ],
-      model: openai.languageModel("gpt-4o-mini"),
-    });
-
-    return response.text;
-  },
-});
+    description:
+      "ALWAYS call this first when a user pastes a conversion rule.",
+    args: z.object({
+      rule: z.string().describe("The conversion rule to syntax check."),
+    }),
+    handler: async (ctx, args) => {
+      const issues: string[] = [];
+      const rule = args.rule.trim();
+  
+      // 1. Check balanced parentheses
+      let parenDepth = 0;
+      let bracketDepth = 0;
+      for (const ch of rule) {
+        if (ch === '(') parenDepth++;
+        if (ch === ')') parenDepth--;
+        if (ch === '[') bracketDepth++;
+        if (ch === ']') bracketDepth--;
+        if (parenDepth < 0) issues.push("Unexpected closing parenthesis ')'");
+        if (bracketDepth < 0) issues.push("Unexpected closing bracket ']'");
+      }
+      if (parenDepth !== 0) {
+        issues.push(`Unbalanced parentheses: ${parenDepth > 0 ? `${parenDepth} unclosed '('` : `${Math.abs(parenDepth)} extra ')'`}`);
+      }
+      if (bracketDepth !== 0) {
+        issues.push(`Unbalanced brackets: ${bracketDepth > 0 ? `${bracketDepth} unclosed '['` : `${Math.abs(bracketDepth)} extra ']'`}`);
+      }
+  
+      // 2. Check target syntax: #tag[events]= or FID:type[events]=
+      const targetMatch = rule.match(/^(#\d+|\d+:\d+)\[([A-Z]*)\]=(.*)/s);
+      if (!targetMatch) {
+        issues.push("Rule target must match #tag[events]= or FID:type[events]=");
+      } else {
+        const [, , events, body] = targetMatch;
+        if (!events) issues.push("Event codes are empty inside brackets");
+        if (!body) issues.push("Rule body after '=' is empty");
+      }
+  
+      // 3. Check Conditional has 3 arguments
+      const conditionalMatch = rule.match(/Conditional\(/);
+      if (conditionalMatch) {
+        // Count top-level commas inside Conditional(...)
+        const startIdx = rule.indexOf('Conditional(') + 'Conditional('.length;
+        let depth = 1;
+        let commas = 0;
+        for (let i = startIdx; i < rule.length && depth > 0; i++) {
+          if (rule[i] === '(') depth++;
+          if (rule[i] === ')') depth--;
+          if (rule[i] === ',' && depth === 1) commas++;
+        }
+        if (commas !== 2) {
+          issues.push(`Conditional() requires exactly 3 arguments (condition, trueBranch, falseBranch) — found ${commas + 1} argument(s)`);
+        }
+      }
+  
+      // 4. Check FIDs have type suffixes
+      const fidRefs = rule.match(/\b(\d{4,5})(?=[,\)\"])/g);
+      if (fidRefs) {
+        for (const fid of fidRefs) {
+          // Check it's not preceded by : (already has suffix)
+          const idx = rule.indexOf(fid);
+          if (idx > 0 && rule[idx - 1] !== ':' && !/^#/.test(rule.substring(idx - 1))) {
+            // Verify there's no :N suffix
+            const after = rule.substring(idx + fid.length, idx + fid.length + 2);
+            if (!after.startsWith(':')) {
+              issues.push(`FID ${fid} may be missing a type suffix (e.g. ${fid}:6)`);
+            }
+          }
+        }
+      }
+  
+      if (issues.length === 0) {
+        return "Syntax is structurally valid. No issues found.";
+      }
+  
+      return `Found ${issues.length} issue(s):\n${issues.map((i, idx) => `${idx + 1}. ${i}`).join('\n')}`;
+    },
+  });
