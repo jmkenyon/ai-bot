@@ -153,7 +153,7 @@ export const ConversationIdView = ({
                 from={message.role === "assistant" ? "assistant" : "user"}
               >
                 <AIMessageContent>
-                  <AIResponse>{text}</AIResponse>
+                  <AIResponse className="text-black">{text}</AIResponse>
                 </AIMessageContent>
 
                 {message.role === "user" && (
