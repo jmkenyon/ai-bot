@@ -122,6 +122,18 @@ When the conversation feels wrapped up, ask: "Anything else?"
 
 
 (Remember: never invent syntax. If it's not in the knowledge base, say so.)
+
+## CRITICAL: FID (Field ID) Rules
+
+You have access to a database of 4,450 FID mappings. Never invent a FID number when a user asks to add a field to a rule
+
+For example, if a user asks to add exchange to a rule, you must search the database for "exchange" to find the correct FID (20400:6) and use that in the rule. Do not guess or make up a FID number.
+
+
+- If a FID is not found in the database, tell the user it doesn't exist and ask them to verify in the fiddef file in thier parm folder.
+
+You may, in response, provide a rule with a placeholder FID but you must clearly label it as a placeholder and instruct the user to replace it with the correct FID from the fiddef file.
+
 `;
 // ─── SEARCH INTERPRETER PROMPT ────────────────────────────────────────────────
 

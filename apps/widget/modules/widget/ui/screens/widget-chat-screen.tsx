@@ -38,12 +38,15 @@ import { AIResponse } from "@workspace/ui/components/ai/response";
 import { Form, FormField } from "@workspace/ui/components/form";
 import { useInfiniteScroll } from "@workspace/ui/hooks/use-infinite-scroll";
 import { InfiniteScrollTrigger } from "@workspace/ui/components/infinite-scroll-trigger";
+import { useState } from "react";
 
 const formSchema = z.object({
   message: z.string().min(1, "Message is required"),
 });
 
 export const WidgetChatScreen = () => {
+  const [isWaiting, setIsWaiting] = useState(false);
+
   const setScreen = useSetAtom(screenAtom);
   const setConversationId = useSetAtom(conversationIdAtom);
   const conversationId = useAtomValue(conversationIdAtom);
@@ -98,12 +101,16 @@ export const WidgetChatScreen = () => {
   const onSubmit = async (values: z.infer<typeof formSchema>) => {
     if (!conversation || !contactSessionId) return;
     form.reset();
-    await createMessage({
-      prompt: values.message,
-      threadId: conversation!.threadId,
-      contactSessionId,
-    });
-    form.reset();
+    setIsWaiting(true);
+    try {
+      await createMessage({
+        prompt: values.message,
+        threadId: conversation!.threadId,
+        contactSessionId,
+      });
+    } finally {
+      setIsWaiting(false);
+    }
   };
 
   return (
@@ -165,6 +172,20 @@ export const WidgetChatScreen = () => {
                 </AIMessage>
               );
             })}
+          {isWaiting && (
+            <AIMessage from="assistant">
+              <AIMessageContent>
+                <div className="flex items-center gap-x-2 py-2">
+                  <div className="flex gap-1">
+                    <span className="h-2 w-2 rounded-full bg-gray-400 animate-bounce [animation-delay:-0.3s]" />
+                    <span className="h-2 w-2 rounded-full bg-gray-400 animate-bounce [animation-delay:-0.15s]" />
+                    <span className="h-2 w-2 rounded-full bg-gray-400 animate-bounce" />
+                  </div>
+                </div>
+              </AIMessageContent>
+              <DicebearAvatar imageUrl="/logo.png" seed="assistant" size={32} />
+            </AIMessage>
+          )}
         </AIConversationContent>
         <AIConversationScrollButton />
       </AIConversation>

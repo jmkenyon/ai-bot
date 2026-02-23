@@ -44,4 +44,12 @@ export default defineSchema({
   users: defineTable({
     name: v.string(),
   }),
+  fidMappings: defineTable({
+    fieldName: v.string(), // e.g. "CUSTOMER", "EXCHANGE"
+    fidNumber: v.number(), // e.g. 20008, 20400
+    dataType: v.string(), // e.g. "STRING", "INT", "DOUBLE"
+    description: v.string(), // e.g. "Customer", "Exchange"
+  })
+    .index("by_fid_number", ["fidNumber"])
+    .index("by_field_name", ["fieldName"]),
 });
